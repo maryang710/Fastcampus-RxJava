@@ -3,11 +3,8 @@ package com.maryang.fastrxjava.ui.repos
 import com.maryang.fastrxjava.base.BaseViewModel
 import com.maryang.fastrxjava.data.repository.GithubRepository
 import com.maryang.fastrxjava.entity.GithubRepo
-import io.reactivex.Completable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
@@ -26,24 +23,14 @@ class GithubReposViewModel(
             .debounce(400, TimeUnit.MILLISECONDS)
             .distinctUntilChanged()
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext { loadingState.onNext(it.second) }
-            .observeOn(Schedulers.io())
-            .switchMapSingle {
-                if (it.first.isEmpty()) Single.just(emptyList())
-                else repository.searchGithubRepos(it.first)
+            .subscribe {
+                if (it.first.isEmpty()) return@subscribe
+                loadingState.onNext(it.second)
+                repository.searchGithubRepos(it.first) {
+                    loadingState.onNext(false)
+                    reposState.onNext(it)
+                }
             }
-            .switchMapSingle {
-                Completable.merge(
-                    it.map { repo ->
-                        repository.checkStar(repo.owner.userName, repo.name)
-                            .doOnComplete { repo.star = true }
-                            .onErrorComplete()
-                    }
-                ).toSingleDefault(it)
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext { loadingState.onNext(false) }
-            .subscribe(reposState::onNext)
     }
 
     fun searchGithubRepos(search: String) {

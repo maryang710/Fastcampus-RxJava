@@ -5,6 +5,7 @@ import com.maryang.fastrxjava.data.request.CreateIssueRequest
 import com.maryang.fastrxjava.entity.Issue
 import io.reactivex.Completable
 import io.reactivex.Single
+import retrofit2.Call
 import retrofit2.http.*
 
 interface GithubApi {
@@ -12,7 +13,7 @@ interface GithubApi {
     @GET("search/repositories")
     fun searchRepos(
         @Query("q") search: String
-    ): Single<JsonElement>
+    ): Call<JsonElement>
 
     @GET("user/starred/{owner}/{repo}")
     fun checkStar(
