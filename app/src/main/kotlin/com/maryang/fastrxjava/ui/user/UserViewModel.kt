@@ -1,6 +1,5 @@
 package com.maryang.fastrxjava.ui.user
 
-import android.annotation.SuppressLint
 import com.maryang.fastrxjava.base.BaseViewModel
 import com.maryang.fastrxjava.data.repository.GithubRepository
 import com.maryang.fastrxjava.entity.GithubRepo
@@ -23,7 +22,6 @@ class UserViewModel(
         getUserCounts(user)
     }
 
-    @SuppressLint("CheckResult")
     private fun getUserCounts(user: User) {
         repository.getFollowers(user.followersUrl)
             .observeOn(AndroidSchedulers.mainThread())
