@@ -22,25 +22,11 @@ class GithubReposViewModel(
 
     fun onCreate() {
         compositeDisposable += searchSubject
-            .debounce(400, TimeUnit.MILLISECONDS)
-            .distinctUntilChanged()
-            .observeOn(AndroidSchedulers.mainThread())
             .doOnNext { loadingState.onNext(it.second) }
-            .observeOn(Schedulers.io())
             .switchMapSingle {
                 if (it.first.isEmpty()) Single.just(emptyList())
                 else repository.searchGithubRepos(it.first)
             }
-            .switchMapSingle {
-                Completable.merge(
-                    it.map { repo ->
-                        repository.checkStar(repo.owner.userName, repo.name)
-                            .doOnComplete { repo.star = true }
-                            .onErrorComplete()
-                    }
-                ).toSingleDefault(it)
-            }
-            .observeOn(AndroidSchedulers.mainThread())
             .doOnNext { loadingState.onNext(false) }
             .subscribe(reposState::onNext)
     }
