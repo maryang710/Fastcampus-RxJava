@@ -18,15 +18,6 @@ class SignupActivity : BaseViewModelActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
-        compositeDisposable += viewModel.check1State.subscribe {
-            checkbox1.isChecked = it
-        }
-        compositeDisposable += viewModel.check2State.subscribe {
-            checkbox2.isChecked = it
-        }
-        compositeDisposable += viewModel.check3State.subscribe {
-            checkbox3.isChecked = it
-        }
         compositeDisposable += viewModel.buttonState.subscribe {
             signupButton.isEnabled = it
             signupButton.setBackgroundColor(
@@ -45,6 +36,7 @@ class SignupActivity : BaseViewModelActivity() {
             startActivity(
                 Intent(this, GithubReposActivity::class.java)
             )
+            finish()
         }
     }
 }
