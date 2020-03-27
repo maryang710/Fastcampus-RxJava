@@ -11,5 +11,9 @@ data class User(
     @SerializedName("login")
     val userName: String,
     @SerializedName("avatar_url")
-    val avatarUrl: String
+    val avatarUrl: String,
+    @SerializedName("followers_url")
+    val followersUrl: String,
+    @SerializedName("repos_url")
+    val reposUrl: String
 ) : Parcelable

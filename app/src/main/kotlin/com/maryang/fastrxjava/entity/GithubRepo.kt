@@ -45,7 +45,7 @@ data class GithubRepo(
 ) : Parcelable {
     constructor() : this(
         0, "", false, User(
-            0, "", ""
+            0, "", "", "", ""
         ), "", "", 0, 0, 0, 0,
         Date(), Date(), Date()
     )

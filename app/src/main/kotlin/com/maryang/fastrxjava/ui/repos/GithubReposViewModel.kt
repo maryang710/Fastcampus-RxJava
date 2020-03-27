@@ -13,8 +13,7 @@ import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 
 class GithubReposViewModel(
-    private val repository: GithubRepository =
-        GithubRepository()
+    private val repository: GithubRepository = GithubRepository()
 ) : BaseViewModel() {
 
     private val searchSubject = BehaviorSubject.createDefault("" to false)

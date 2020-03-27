@@ -3,11 +3,14 @@ package com.maryang.fastrxjava.ui.user
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.maryang.fastrxjava.base.BaseActivity
+import com.bumptech.glide.Glide
+import com.maryang.fastrxjava.base.BaseViewModelActivity
 import com.maryang.fastrxjava.entity.User
+import io.reactivex.rxkotlin.plusAssign
+import kotlinx.android.synthetic.main.activity_user.*
 
 
-class UserActivity : BaseActivity() {
+class UserActivity : BaseViewModelActivity() {
 
     companion object {
         private const val KEY_USER = "KEY_USER"
@@ -22,14 +25,34 @@ class UserActivity : BaseActivity() {
         }
     }
 
+    override val viewModel: UserViewModel by lazy {
+        UserViewModel()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.maryang.fastrxjava.R.layout.activity_user)
-        intent.getParcelableExtra<User>(KEY_USER).let {
-            supportActionBar?.run {
-                title = it.userName
-                setDisplayHomeAsUpEnabled(true)
-            }
+        val user = intent.getParcelableExtra<User>(KEY_USER)!!
+        supportActionBar?.run {
+            title = user.userName
+            setDisplayHomeAsUpEnabled(true)
         }
+
+        compositeDisposable += viewModel.userState.subscribe(::showUser)
+        compositeDisposable += viewModel.followersCountState.subscribe {
+            followersCount.text = it.toString()
+        }
+        compositeDisposable += viewModel.reposCountState.subscribe {
+            reposCount.text = it.toString()
+        }
+
+        viewModel.onCreate(user)
+    }
+
+    private fun showUser(user: User) {
+        Glide.with(this)
+            .load(user.avatarUrl)
+            .into(ownerImage)
+        ownerName.text = user.userName
     }
 }

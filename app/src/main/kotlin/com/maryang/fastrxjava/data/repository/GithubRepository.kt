@@ -6,6 +6,7 @@ import com.maryang.fastrxjava.data.request.CreateIssueRequest
 import com.maryang.fastrxjava.data.source.ApiManager
 import com.maryang.fastrxjava.entity.GithubRepo
 import com.maryang.fastrxjava.entity.Issue
+import com.maryang.fastrxjava.entity.User
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -49,5 +50,13 @@ class GithubRepository {
 
     fun createIssue(owner: String, repo: String, title: String, body: String): Single<Issue> =
         api.createIssue(owner, repo, CreateIssueRequest(title, body))
+            .subscribeOn(Schedulers.io())
+
+    fun getFollowers(url: String): Single<List<User>> =
+        api.getFollowers(url)
+            .subscribeOn(Schedulers.io())
+
+    fun getRepos(url: String): Single<List<GithubRepo>> =
+        api.getRepos(url)
             .subscribeOn(Schedulers.io())
 }

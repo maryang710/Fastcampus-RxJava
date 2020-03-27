@@ -2,10 +2,13 @@ package com.maryang.fastrxjava.data.source
 
 import com.google.gson.JsonElement
 import com.maryang.fastrxjava.data.request.CreateIssueRequest
+import com.maryang.fastrxjava.entity.GithubRepo
 import com.maryang.fastrxjava.entity.Issue
+import com.maryang.fastrxjava.entity.User
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.*
+
 
 interface GithubApi {
 
@@ -44,4 +47,14 @@ interface GithubApi {
         @Path("repo") repo: String,
         @Body request: CreateIssueRequest
     ): Single<Issue>
+
+    @GET
+    fun getFollowers(
+        @Url url: String
+    ): Single<List<User>>
+
+    @GET
+    fun getRepos(
+        @Url url: String
+    ): Single<List<GithubRepo>>
 }
