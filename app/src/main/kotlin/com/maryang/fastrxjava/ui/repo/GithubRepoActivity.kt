@@ -13,7 +13,6 @@ import com.maryang.fastrxjava.base.BaseActivity
 import com.maryang.fastrxjava.entity.GithubRepo
 import com.maryang.fastrxjava.ui.issue.IssueCreateActivity
 import com.maryang.fastrxjava.ui.user.UserActivity
-import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.activity_github_repo.*
 
 
@@ -46,10 +45,10 @@ class GithubRepoActivity : BaseActivity() {
         issues.layoutManager = LinearLayoutManager(this)
         issues.adapter = issuesAdapter
 
-        compositeDisposable += viewModel.repoState.subscribe {
+        viewModel.repoState.subscribe {
             showRepo(it)
         }
-        compositeDisposable += viewModel.issuesState.subscribe {
+        viewModel.issuesState.subscribe {
             issueLabel.visibility = View.VISIBLE
             issuesAdapter.items = it.toMutableList()
         }

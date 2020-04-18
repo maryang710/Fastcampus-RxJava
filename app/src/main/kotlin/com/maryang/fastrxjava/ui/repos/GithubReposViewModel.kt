@@ -36,7 +36,6 @@ class GithubReposViewModel(
                     it.map { repo ->
                         repository.checkStar(repo.owner.userName, repo.name)
                             .doOnComplete { repo.star = true }
-                            .onErrorComplete()
                     }
                 ).toSingleDefault(it)
             }

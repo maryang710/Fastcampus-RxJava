@@ -6,7 +6,6 @@ import android.os.Bundle
 import com.bumptech.glide.Glide
 import com.maryang.fastrxjava.base.BaseViewModelActivity
 import com.maryang.fastrxjava.entity.User
-import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.activity_user.*
 
 
@@ -38,11 +37,11 @@ class UserActivity : BaseViewModelActivity() {
             setDisplayHomeAsUpEnabled(true)
         }
 
-        compositeDisposable += viewModel.userState.subscribe(::showUser)
-        compositeDisposable += viewModel.followersCountState.subscribe {
+        viewModel.userState.subscribe(::showUser)
+        viewModel.followersCountState.subscribe {
             followersCount.text = it.toString()
         }
-        compositeDisposable += viewModel.reposCountState.subscribe {
+        viewModel.reposCountState.subscribe {
             reposCount.text = it.toString()
         }
 

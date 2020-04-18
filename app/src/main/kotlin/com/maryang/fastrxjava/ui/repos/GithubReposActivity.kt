@@ -6,7 +6,6 @@ import android.text.TextWatcher
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.maryang.fastrxjava.base.BaseViewModelActivity
-import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.activity_github_repos.*
 
 
@@ -42,10 +41,10 @@ class GithubReposActivity : BaseViewModelActivity() {
             }
         })
 
-        compositeDisposable += viewModel.loadingState.subscribe {
+        viewModel.loadingState.subscribe {
             if (it) showLoading() else hideLoading()
         }
-        compositeDisposable += viewModel.reposState.subscribe {
+        viewModel.reposState.subscribe {
             adapter.items = it
         }
         viewModel.onCreate()

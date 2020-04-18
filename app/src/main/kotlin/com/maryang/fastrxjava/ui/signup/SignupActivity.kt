@@ -5,7 +5,6 @@ import android.os.Bundle
 import com.maryang.fastrxjava.R
 import com.maryang.fastrxjava.base.BaseViewModelActivity
 import com.maryang.fastrxjava.ui.repos.GithubReposActivity
-import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.activity_signup.*
 
 
@@ -18,7 +17,7 @@ class SignupActivity : BaseViewModelActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
-        compositeDisposable += viewModel.buttonState.subscribe {
+        viewModel.buttonState.subscribe {
             signupButton.isEnabled = it
             signupButton.setBackgroundColor(
                 if (it) getColor(R.color.colorPrimary)

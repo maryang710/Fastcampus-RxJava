@@ -4,8 +4,8 @@ import com.maryang.fastrxjava.base.BaseViewModel
 import com.maryang.fastrxjava.data.repository.GithubRepository
 import com.maryang.fastrxjava.entity.GithubRepo
 import com.maryang.fastrxjava.entity.User
-import com.maryang.fastrxjava.observer.DefaultSingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
@@ -25,17 +25,23 @@ class UserViewModel(
     private fun getUserCounts(user: User) {
         repository.getFollowers(user.followersUrl)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : DefaultSingleObserver<List<User>>() {
+            .subscribe(object : DisposableSingleObserver<List<User>>() {
                 override fun onSuccess(t: List<User>) {
                     followersCountState.onNext(t.size)
+                }
+
+                override fun onError(e: Throwable) {
                 }
             })
 
         repository.getRepos(user.reposUrl)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : DefaultSingleObserver<List<GithubRepo>>() {
+            .subscribe(object : DisposableSingleObserver<List<GithubRepo>>() {
                 override fun onSuccess(t: List<GithubRepo>) {
                     reposCountState.onNext(t.size)
+                }
+
+                override fun onError(e: Throwable) {
                 }
             })
     }
