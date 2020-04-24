@@ -2,7 +2,6 @@ package com.maryang.fastrxjava.ui.signup
 
 import android.content.Intent
 import android.os.Bundle
-import com.jakewharton.rxbinding3.widget.checkedChanges
 import com.maryang.fastrxjava.R
 import com.maryang.fastrxjava.base.BaseViewModelActivity
 import com.maryang.fastrxjava.ui.repos.GithubReposActivity
@@ -30,9 +29,9 @@ class SignupActivity : BaseViewModelActivity() {
     }
 
     private fun setOnClickListener() {
-        checkbox1.checkedChanges().subscribe(viewModel.check1State)
-        checkbox2.checkedChanges().subscribe(viewModel.check2State)
-        checkbox3.checkedChanges().subscribe(viewModel.check3State)
+        checkbox1.setOnClickListener { viewModel.check1State.onNext(checkbox1.isChecked) }
+        checkbox2.setOnClickListener { viewModel.check2State.onNext(checkbox2.isChecked) }
+        checkbox3.setOnClickListener { viewModel.check3State.onNext(checkbox3.isChecked) }
         signupButton.setOnClickListener {
             startActivity(
                 Intent(this, GithubReposActivity::class.java)
