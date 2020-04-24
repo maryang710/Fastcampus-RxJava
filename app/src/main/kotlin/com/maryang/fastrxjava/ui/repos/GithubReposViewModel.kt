@@ -3,17 +3,18 @@ package com.maryang.fastrxjava.ui.repos
 import com.maryang.fastrxjava.base.BaseViewModel
 import com.maryang.fastrxjava.data.repository.GithubRepository
 import com.maryang.fastrxjava.entity.GithubRepo
+import com.maryang.fastrxjava.util.provider.SchedulerProvider
+import com.maryang.fastrxjava.util.provider.SchedulerProviderInterface
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 
 class GithubReposViewModel(
-    private val repository: GithubRepository = GithubRepository()
+    private val repository: GithubRepository = GithubRepository(),
+    private val schedulerProvider: SchedulerProviderInterface = SchedulerProvider()
 ) : BaseViewModel() {
 
     private val searchSubject = BehaviorSubject.createDefault("" to false)
@@ -22,11 +23,11 @@ class GithubReposViewModel(
 
     fun onCreate() {
         compositeDisposable += searchSubject
-            .debounce(400, TimeUnit.MILLISECONDS)
+            .debounce(400, TimeUnit.MILLISECONDS, schedulerProvider.computation())
             .distinctUntilChanged()
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulerProvider.main())
             .doOnNext { loadingState.onNext(it.second) }
-            .observeOn(Schedulers.io())
+            .observeOn(schedulerProvider.io())
             .switchMapSingle {
                 if (it.first.isEmpty()) Single.just(emptyList())
                 else repository.searchGithubRepos(it.first)
@@ -40,7 +41,7 @@ class GithubReposViewModel(
                     }
                 ).toSingleDefault(it)
             }
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulerProvider.main())
             .doOnNext { loadingState.onNext(false) }
             .subscribe(reposState::onNext)
     }

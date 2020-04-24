@@ -3,6 +3,7 @@ package com.maryang.fastrxjava
 import com.maryang.fastrxjava.data.repository.GithubRepository
 import com.maryang.fastrxjava.entity.GithubRepo
 import com.maryang.fastrxjava.ui.repos.GithubReposViewModel
+import com.maryang.fastrxjava.util.provider.TestSchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
@@ -13,6 +14,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
+import java.util.concurrent.TimeUnit
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -26,7 +28,8 @@ class GithubReposViewModelTest {
     @Mock
     lateinit var githubRepository: GithubRepository
 
-    private val repos: List<GithubRepo> = emptyList()
+    private val testSchedulerProvider = TestSchedulerProvider()
+    private val repos: List<GithubRepo> = listOf(GithubRepo())
     private val searchText = "searchText"
 
     @Before
@@ -35,17 +38,21 @@ class GithubReposViewModelTest {
         RxJavaPlugins.setComputationSchedulerHandler { Schedulers.trampoline() }
         RxJavaPlugins.setIoSchedulerHandler { Schedulers.trampoline() }
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
-        viewModel = GithubReposViewModel(githubRepository)
 
         Mockito.`when`(githubRepository.searchGithubRepos(Mockito.anyString()))
             .thenReturn(Single.just(repos))
         Mockito.`when`(githubRepository.checkStar(Mockito.anyString(), Mockito.anyString()))
             .thenReturn(Completable.complete())
+
+        viewModel = GithubReposViewModel(githubRepository, testSchedulerProvider)
+        viewModel.onCreate()
     }
 
     @Test
     fun searchTest() {
+        val observer = viewModel.reposState.test()
         viewModel.searchGithubRepos(searchText)
-        viewModel.reposState.test().assertValue(repos)
+        testSchedulerProvider.testScheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS)
+        observer.assertValue(repos)
     }
 }
